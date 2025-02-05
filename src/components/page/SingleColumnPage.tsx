@@ -5,7 +5,7 @@ interface SingleColumnPageProps {
 }
 
 const SingleColumnPage: React.FC<SingleColumnPageProps> = ({ children }) => {
-  return <div className="p-[48px]">{children}</div>;
+  return <div className="p-[48px] w-full">{children}</div>;
 };
 
 export default SingleColumnPage;
