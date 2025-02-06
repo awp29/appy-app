@@ -15,12 +15,13 @@ import { cn } from "../../utils";
 import { formatDistance } from "date-fns";
 import Checkbox from "../../components/form/Checkbox";
 import { CheckboxIcon } from "../../components/form/types";
+import PrimaryButton from "../../components/button/PrimaryButton";
+import { useNavigate } from "react-router";
+import PageHeader from "../../components/page/PageHeader";
+import Input from "../../components/form/Input";
 
 type Person = {
-  user: {
-    name: string;
-    role: string;
-  };
+  name: string;
   email: string;
   lastActive: string;
   budget: number;
@@ -28,19 +29,13 @@ type Person = {
 
 const people: Person[] = [
   {
-    user: {
-      name: "John Smith",
-      role: "Designer",
-    },
+    name: "John Smith",
     email: "j.smith@appyapp.com",
     lastActive: "2025-02-03T13:55:29+00:00",
     budget: 8590.03,
   },
   {
-    user: {
-      name: "Brooklyn Sims",
-      role: "UX Designer",
-    },
+    name: "Brooklyn Sims",
     email: "b.sims@appyapp.com",
     lastActive: "2025-02-01T09:23:01+00:00",
     budget: -2201.04,
@@ -53,12 +48,6 @@ const columns = [
   columnHelper.display({
     id: "select-col",
     header: ({ table }) => (
-      // <input
-      //   type="checkbox"
-      //   checked={table.getIsAllRowsSelected()}
-      //   onChange={table.getToggleAllRowsSelectedHandler()}
-      // />
-
       <Checkbox
         iconType={CheckboxIcon.Dash}
         onChange={table.getToggleAllRowsSelectedHandler()}
@@ -68,11 +57,6 @@ const columns = [
 
     cell: ({ row }) => {
       return (
-        // <input
-        //   type="checkbox"
-        //   checked={row.getIsSelected()}
-        //   onChange={row.getToggleSelectedHandler()}
-        // />
         <Checkbox
           onChange={row.getToggleSelectedHandler()}
           checked={row.getIsSelected()}
@@ -80,15 +64,12 @@ const columns = [
       );
     },
   }),
-  columnHelper.accessor("user", {
+  columnHelper.accessor("name", {
     header: () => <HeaderText>User</HeaderText>,
     cell: (info) => {
-      const user = info.getValue();
-
       return (
         <CellText className="flex flex-col">
-          <span className="text-strong">{user.name}</span>
-          <span className="text-[14px]">{user.role}</span>
+          <span className="text-strong">{info.getValue()}</span>
         </CellText>
       );
     },
@@ -124,11 +105,18 @@ const columns = [
 ];
 
 const PeoplePage: React.FC = () => {
+  const navigate = useNavigate();
+  const [globalFilter, setGlobalFilter] = React.useState("");
+
   const table = useReactTable({
     enableRowSelection: true,
     columns,
     data: people,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   // AP-TODO: USE THIS TO DELETE MULTIPLE ROWS ETC
@@ -139,10 +127,29 @@ const PeoplePage: React.FC = () => {
       <Nav />
 
       <SingleColumnPage>
-        <PageTitle>People</PageTitle>
-        <PageDescription>Have a little spy on your people</PageDescription>
+        <PageHeader>
+          <PageTitle>People</PageTitle>
+          <PageDescription>Have a little spy on your people</PageDescription>
 
-        <div className="mt-[48px] w-full">
+          <PrimaryButton
+            className="ml-auto"
+            onClick={() => navigate("/addmember")}
+          >
+            Add member
+          </PrimaryButton>
+        </PageHeader>
+
+        <div className="w-full mb-4">
+          <Input
+            className="font-mono"
+            placeholder="Search"
+            onChange={(e) => {
+              setGlobalFilter(String(e.target.value));
+            }}
+          />
+        </div>
+
+        <div className="w-full">
           <table className="w-full">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
