@@ -6,9 +6,7 @@ interface HeaderProps {
   children: React.ReactNode;
 }
 
-const HeaderLabel: React.FC<HeaderProps> = ({ className, children }) => {
-  console.log("className", className);
-
+const HeaderText: React.FC<HeaderProps> = ({ className, children }) => {
   return (
     <div className={cn("text-left text-[14px] text-weak", className)}>
       {children}
@@ -16,4 +14,4 @@ const HeaderLabel: React.FC<HeaderProps> = ({ className, children }) => {
   );
 };
 
-export default HeaderLabel;
+export default HeaderText;

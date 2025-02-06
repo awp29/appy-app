@@ -9,11 +9,18 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import HeaderLabel from "../../components/table/HeaderLabel";
+import HeaderText from "../../components/table/HeaderText";
+import CellText from "../../components/table/CellText";
+import { cn } from "../../utils";
+import { formatDistance } from "date-fns";
+import Checkbox from "../../components/form/Checkbox";
+import { CheckboxIcon } from "../../components/form/types";
 
 type Person = {
-  name: string;
-  role: string;
+  user: {
+    name: string;
+    role: string;
+  };
   email: string;
   lastActive: string;
   budget: number;
@@ -21,17 +28,21 @@ type Person = {
 
 const people: Person[] = [
   {
-    name: "John Smith",
-    role: "Designer",
+    user: {
+      name: "John Smith",
+      role: "Designer",
+    },
     email: "j.smith@appyapp.com",
     lastActive: "2025-02-03T13:55:29+00:00",
     budget: 8590.03,
   },
   {
-    name: "Brooklyn Sims",
-    role: "UX Designer",
+    user: {
+      name: "Brooklyn Sims",
+      role: "UX Designer",
+    },
     email: "b.sims@appyapp.com",
-    lastActive: "2025-04-03T09:23:01+00:00",
+    lastActive: "2025-02-01T09:23:01+00:00",
     budget: -2201.04,
   },
 ];
@@ -42,8 +53,14 @@ const columns = [
   columnHelper.display({
     id: "select-col",
     header: ({ table }) => (
-      <input
-        type="checkbox"
+      // <input
+      //   type="checkbox"
+      //   checked={table.getIsAllRowsSelected()}
+      //   onChange={table.getToggleAllRowsSelectedHandler()}
+      // />
+
+      <Checkbox
+        iconType={CheckboxIcon.Dash}
         onChange={table.getToggleAllRowsSelectedHandler()}
         checked={table.getIsAllRowsSelected()}
       />
@@ -51,33 +68,58 @@ const columns = [
 
     cell: ({ row }) => {
       return (
-        <input
-          type="checkbox"
+        // <input
+        //   type="checkbox"
+        //   checked={row.getIsSelected()}
+        //   onChange={row.getToggleSelectedHandler()}
+        // />
+        <Checkbox
           onChange={row.getToggleSelectedHandler()}
           checked={row.getIsSelected()}
         />
       );
     },
   }),
-  columnHelper.accessor("name", {
-    header: () => <HeaderLabel>Name</HeaderLabel>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("role", {
-    header: () => <HeaderLabel>Role</HeaderLabel>,
-    cell: (info) => info.getValue(),
+  columnHelper.accessor("user", {
+    header: () => <HeaderText>User</HeaderText>,
+    cell: (info) => {
+      const user = info.getValue();
+
+      return (
+        <CellText className="flex flex-col">
+          <span className="text-strong">{user.name}</span>
+          <span className="text-[14px]">{user.role}</span>
+        </CellText>
+      );
+    },
   }),
   columnHelper.accessor("email", {
-    header: () => <HeaderLabel>Email</HeaderLabel>,
-    cell: (info) => info.getValue(),
+    header: () => <HeaderText>Email</HeaderText>,
+    cell: (info) => <CellText>{info.getValue()}</CellText>,
   }),
   columnHelper.accessor("lastActive", {
-    header: () => <HeaderLabel>Last Active</HeaderLabel>,
-    cell: (info) => info.getValue(),
+    header: () => <HeaderText>Last Active</HeaderText>,
+    cell: (info) => {
+      const lastActive = info.getValue();
+      const distance = formatDistance(lastActive, new Date(), {
+        addSuffix: true,
+      });
+
+      return <CellText>{distance}</CellText>;
+    },
   }),
   columnHelper.accessor("budget", {
-    header: () => <HeaderLabel className="text-right">Budget</HeaderLabel>,
-    cell: (info) => <div className="text-right">{info.getValue()}</div>,
+    header: () => <HeaderText className="text-right">Budget</HeaderText>,
+    cell: (info) => {
+      const budget = info.getValue();
+      const isNegative = budget < 0;
+
+      return (
+        <CellText className={cn("text-right", isNegative && "text-error")}>
+          {info.getValue()} GBP
+        </CellText>
+      );
+    },
   }),
 ];
 
@@ -123,7 +165,10 @@ const PeoplePage: React.FC = () => {
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
+                <tr
+                  key={row.id}
+                  className="h-[80px] border-b-2 border-solid border-stroke-weak"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
                       {flexRender(
