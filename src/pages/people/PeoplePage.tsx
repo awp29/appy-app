@@ -7,6 +7,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import HeaderText from "../../components/table/HeaderText";
@@ -19,6 +20,10 @@ import PageHeader from "../../components/page/PageHeader";
 import { Person } from "./types";
 import { mockPeople } from "./mockData";
 import { format } from "date-fns";
+import Pagination from "../../components/table/pagination/Pagination";
+import ChevronLeftIcon from "../../assets/icons/chevronLeft.svg?react";
+import ChevronRightIcon from "../../assets/icons/chevronRight.svg?react";
+import ChevronDownIcon from "../../assets/icons/chevronDown.svg?react";
 
 const columnHelper = createColumnHelper<Person>();
 
@@ -77,21 +82,32 @@ const columns = [
 
 const PeoplePage: React.FC = () => {
   const navigate = useNavigate();
+
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const table = useReactTable({
     enableRowSelection: true,
     columns,
     data: mockPeople,
-    getCoreRowModel: getCoreRowModel(),
     state: {
+      pagination,
       globalFilter,
     },
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
   });
 
   // AP-TODO: USE THIS TO DELETE MULTIPLE ROWS ETC
   // const selectedRows = table.getSelectedRowModel().rows;
+
+  const firstRowIndex = pagination.pageIndex * pagination.pageSize + 1;
+  const lastRowIndex = firstRowIndex + pagination.pageSize - 1;
 
   return (
     <div className="flex">
@@ -149,6 +165,39 @@ const PeoplePage: React.FC = () => {
               ))}
             </tbody>
           </table>
+
+          <Pagination>
+            <div className="flex items-center gap-1">
+              <button className="flex items-center justify-between w-[46px]">
+                <span className="text-weak text-[14px] underline">
+                  {String(pagination.pageIndex + 1).padStart(2, "0")}
+                </span>
+                <ChevronDownIcon />
+              </button>
+
+              <span className="text-weak text-[14px]">of 10 pages</span>
+
+              <div className="flex items-center">
+                <Pagination.PageButton
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronLeftIcon width={20} />
+                </Pagination.PageButton>
+
+                <Pagination.PageButton
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronRightIcon width={20} />
+                </Pagination.PageButton>
+              </div>
+            </div>
+
+            <span className="text-weak text-[14px]">
+              Showing {firstRowIndex} - {lastRowIndex} of {table.getRowCount()}
+            </span>
+          </Pagination>
         </div>
       </SingleColumnPage>
     </div>

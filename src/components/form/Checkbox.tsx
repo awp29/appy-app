@@ -26,7 +26,7 @@ const Checkbox: React.FC<Props> = (props) => {
         onChange={onChange}
         checked={checked}
         className={cn(
-          "appearance-none row-start-1 col-start-1 block w-[24px] h-[24px] border-[2px] border-solid border-black rounded-[4px] cursor-pointer",
+          "appearance-none row-start-1 col-start-1 block w-[24px] h-[24px] border-[1px] border-solid border-stroke-strong rounded-[4px] cursor-pointer",
           checked && "bg-black"
         )}
       />
