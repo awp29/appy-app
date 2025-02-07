@@ -11,36 +11,14 @@ import {
 } from "@tanstack/react-table";
 import HeaderText from "../../components/table/HeaderText";
 import CellText from "../../components/table/CellText";
-import { cn } from "../../utils";
-import { formatDistance } from "date-fns";
 import Checkbox from "../../components/form/Checkbox";
 import { CheckboxIcon } from "../../components/form/types";
 import PrimaryButton from "../../components/button/PrimaryButton";
 import { useNavigate } from "react-router";
 import PageHeader from "../../components/page/PageHeader";
-import Input from "../../components/form/Input";
-
-type Person = {
-  name: string;
-  email: string;
-  lastActive: string;
-  budget: number;
-};
-
-const people: Person[] = [
-  {
-    name: "John Smith",
-    email: "j.smith@appyapp.com",
-    lastActive: "2025-02-03T13:55:29+00:00",
-    budget: 8590.03,
-  },
-  {
-    name: "Brooklyn Sims",
-    email: "b.sims@appyapp.com",
-    lastActive: "2025-02-01T09:23:01+00:00",
-    budget: -2201.04,
-  },
-];
+import { Person } from "./types";
+import { mockPeople } from "./mockData";
+import { format } from "date-fns";
 
 const columnHelper = createColumnHelper<Person>();
 
@@ -64,42 +42,35 @@ const columns = [
       );
     },
   }),
-  columnHelper.accessor("name", {
-    header: () => <HeaderText>User</HeaderText>,
+  columnHelper.accessor("details", {
+    header: () => <HeaderText>Employee</HeaderText>,
     cell: (info) => {
+      const details = info.getValue();
+
       return (
         <CellText className="flex flex-col">
-          <span className="text-strong">{info.getValue()}</span>
+          <span className="text-strong">{details.name}</span>
+          <span>{details.email}</span>
         </CellText>
       );
     },
   }),
-  columnHelper.accessor("email", {
+  columnHelper.accessor("role", {
     header: () => <HeaderText>Email</HeaderText>,
     cell: (info) => <CellText>{info.getValue()}</CellText>,
   }),
-  columnHelper.accessor("lastActive", {
-    header: () => <HeaderText>Last Active</HeaderText>,
+  columnHelper.accessor("team", {
+    header: () => <HeaderText>Team</HeaderText>,
     cell: (info) => {
-      const lastActive = info.getValue();
-      const distance = formatDistance(lastActive, new Date(), {
-        addSuffix: true,
-      });
-
-      return <CellText>{distance}</CellText>;
+      return <CellText>{info.getValue()}</CellText>;
     },
   }),
-  columnHelper.accessor("budget", {
-    header: () => <HeaderText className="text-right">Budget</HeaderText>,
+  columnHelper.accessor("dateJoined", {
+    header: () => <HeaderText>Joined</HeaderText>,
     cell: (info) => {
-      const budget = info.getValue();
-      const isNegative = budget < 0;
-
-      return (
-        <CellText className={cn("text-right", isNegative && "text-error")}>
-          {info.getValue()} GBP
-        </CellText>
-      );
+      const dateJoined = info.getValue();
+      const formatedDate = format(new Date(dateJoined), "MMM dd, yyyy");
+      return <CellText>{formatedDate}</CellText>;
     },
   }),
 ];
@@ -111,7 +82,7 @@ const PeoplePage: React.FC = () => {
   const table = useReactTable({
     enableRowSelection: true,
     columns,
-    data: people,
+    data: mockPeople,
     getCoreRowModel: getCoreRowModel(),
     state: {
       globalFilter,
@@ -139,16 +110,6 @@ const PeoplePage: React.FC = () => {
           </PrimaryButton>
         </PageHeader>
 
-        <div className="w-full mb-4">
-          <Input
-            className="font-mono"
-            placeholder="Search"
-            onChange={(e) => {
-              setGlobalFilter(String(e.target.value));
-            }}
-          />
-        </div>
-
         <div className="w-full">
           <table className="w-full">
             <thead>
@@ -157,7 +118,7 @@ const PeoplePage: React.FC = () => {
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="border-b-2 border-t-2 border-solid border-stroke-weak h-[48px]"
+                      className="border-b-[1px] border-t-[1px] border-solid border-stroke-weak h-[48px]"
                     >
                       {header.isPlaceholder
                         ? null
@@ -174,7 +135,7 @@ const PeoplePage: React.FC = () => {
               {table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="h-[80px] border-b-2 border-solid border-stroke-weak"
+                  className="h-[80px] border-b-[1px] border-solid border-stroke-weak"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
