@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "../../utils";
 
 type TextSize = "sm" | "base";
-type TextColor = "strong" | "weak";
+type TextColor = "black" | "strong" | "weak";
 
 interface TextProps {
   size?: TextSize;
@@ -18,6 +18,7 @@ const sizes = {
 const colors = {
   ["strong"]: "text-strong",
   ["weak"]: "text-weak",
+  ["black"]: "text-black",
 };
 
 const Text: React.FC<TextProps> = (props) => {

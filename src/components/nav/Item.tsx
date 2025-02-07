@@ -16,7 +16,7 @@ const Item: React.FC<ItemProps> = (props) => {
         to={to}
         className={({ isActive }) => {
           return cn(
-            "block px-[48px] py-[12px] text-weak hover:text-strong",
+            "block px-[48px] py-[24px] text-weak hover:text-strong",
             isActive && "text-strong font-bold"
           );
         }}
