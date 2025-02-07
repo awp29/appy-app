@@ -13,7 +13,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = (props) => {
   return (
     <button
       className={cn(
-        "flex py-2 px-4 rounded-full",
+        "flex items-center py-2 px-4 rounded-full h-[48px]",
         "text-[14px] text-white font-semibold font-mono",
         "bg-black hover:bg-black/80 active:bg-black/90",
         className

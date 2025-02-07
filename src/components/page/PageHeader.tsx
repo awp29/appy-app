@@ -7,7 +7,7 @@ interface HeaderProps {
 const PageHeader: React.FC<HeaderProps> = (props) => {
   const { children } = props;
 
-  return <div className="mb-[48px]">{children}</div>;
+  return <div className="mb-[48px] flex">{children}</div>;
 };
 
 export default PageHeader;

@@ -24,12 +24,19 @@ import Pagination from "../../components/table/pagination/Pagination";
 import ChevronLeftIcon from "../../assets/icons/chevronLeft.svg?react";
 import ChevronRightIcon from "../../assets/icons/chevronRight.svg?react";
 import ChevronDownIcon from "../../assets/icons/chevronDown.svg?react";
+import MoreHorizontalIcon from "../../assets/icons/moreHorizontal.svg?react";
+import SecondaryButton from "../../components/button/SecondaryButton";
+import TertiaryButton from "../../components/button/TertiaryButton";
+import Text from "../../components/typography/Text";
+import Input from "../../components/form/Input";
 
 const columnHelper = createColumnHelper<Person>();
 
 const columns = [
   columnHelper.display({
     id: "select-col",
+    size: 60,
+    enableResizing: false,
     header: ({ table }) => (
       <Checkbox
         iconType={CheckboxIcon.Dash}
@@ -61,21 +68,40 @@ const columns = [
     },
   }),
   columnHelper.accessor("role", {
-    header: () => <HeaderText>Email</HeaderText>,
+    size: 200,
+    enableResizing: false,
+    header: () => <HeaderText>Role</HeaderText>,
     cell: (info) => <CellText>{info.getValue()}</CellText>,
   }),
   columnHelper.accessor("team", {
+    size: 160,
+    enableResizing: false,
     header: () => <HeaderText>Team</HeaderText>,
     cell: (info) => {
       return <CellText>{info.getValue()}</CellText>;
     },
   }),
   columnHelper.accessor("dateJoined", {
+    size: 160,
+    enableResizing: false,
     header: () => <HeaderText>Joined</HeaderText>,
     cell: (info) => {
       const dateJoined = info.getValue();
       const formatedDate = format(new Date(dateJoined), "MMM dd, yyyy");
       return <CellText>{formatedDate}</CellText>;
+    },
+  }),
+  columnHelper.display({
+    id: "actions-col",
+    size: 80,
+    enableResizing: false,
+    header: () => <HeaderText className="text-right">Actions</HeaderText>,
+    cell: () => {
+      return (
+        <span className="flex justify-end pr-2">
+          <MoreHorizontalIcon />
+        </span>
+      );
     },
   }),
 ];
@@ -104,7 +130,8 @@ const PeoplePage: React.FC = () => {
   });
 
   // AP-TODO: USE THIS TO DELETE MULTIPLE ROWS ETC
-  // const selectedRows = table.getSelectedRowModel().rows;
+  const selectedRows = table.getSelectedRowModel().rows;
+  const numberOfSelectedRows = selectedRows.length;
 
   const firstRowIndex = pagination.pageIndex * pagination.pageSize + 1;
   const lastRowIndex = firstRowIndex + pagination.pageSize - 1;
@@ -115,8 +142,12 @@ const PeoplePage: React.FC = () => {
 
       <SingleColumnPage>
         <PageHeader>
-          <PageTitle>People</PageTitle>
-          <PageDescription>Have a little spy on your people</PageDescription>
+          <div>
+            <PageTitle>People</PageTitle>
+            <PageDescription>
+              Manage ya people, add, delete, edit, you know the drill
+            </PageDescription>
+          </div>
 
           <PrimaryButton
             className="ml-auto"
@@ -127,23 +158,60 @@ const PeoplePage: React.FC = () => {
         </PageHeader>
 
         <div className="w-full">
+          <div className="my-6 flex items-center justify-between">
+            <Input placeholder="Search" />
+
+            {numberOfSelectedRows > 0 && (
+              <div className="flex items-center gap-4">
+                <Text size="sm" color="weak">
+                  {numberOfSelectedRows} items selected
+                </Text>
+
+                <TertiaryButton
+                  onClick={() => {
+                    table.toggleAllRowsSelected(false);
+                  }}
+                >
+                  Cancel
+                </TertiaryButton>
+
+                <SecondaryButton
+                  onClick={() => {
+                    console.log("Delete clicked");
+                  }}
+                >
+                  Delete
+                </SecondaryButton>
+              </div>
+            )}
+          </div>
+
           <table className="w-full">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="border-b-[1px] border-t-[1px] border-solid border-stroke-weak h-[48px]"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
+                  {headerGroup.headers.map((header) => {
+                    // AP-TODO: Don't like this code, need to refactor
+                    const width =
+                      header.index === 1 ? "auto" : `${header.getSize()}px`;
+
+                    return (
+                      <th
+                        key={header.id}
+                        style={{
+                          width,
+                        }}
+                        className="border-b-[1px] border-t-[1px] border-solid border-stroke-weak h-[48px]"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    );
+                  })}
                 </tr>
               ))}
             </thead>

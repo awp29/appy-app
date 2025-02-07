@@ -11,7 +11,7 @@ const Input: React.FC<InputProps> = (props) => {
   return (
     <input
       className={cn(
-        "border-[2px] border-solid border-black rounded-[4px]",
+        "border-[1px] border-solid border-stroke-strong rounded-lg h-8 text-sm text-weak px-4",
         className
       )}
       {...rest}
