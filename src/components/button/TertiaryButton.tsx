@@ -13,6 +13,7 @@ const TertiaryButton: React.FC<TertiaryButtonProps> = (props) => {
     <button
       className={cn(
         "underline text-black text-[14px] font-semibold font-mono px-4 h-[32px]",
+        "rounded-full hover:bg-black/5 active:opacity-80",
         className
       )}
       {...rest}

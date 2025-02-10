@@ -15,7 +15,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = (props) => {
       className={cn(
         "flex items-center py-2 px-4 rounded-full h-[48px]",
         "text-[14px] text-white font-semibold font-mono",
-        "bg-black hover:bg-black/80 active:bg-black/90",
+        "bg-black hover:bg-black/85 active:bg-black/80",
         className
       )}
       onClick={onClick}

@@ -13,6 +13,7 @@ const SecondaryButton: React.FC<SecondaryButtonProps> = (props) => {
     <button
       className={cn(
         "border border-black rounded-full text-black text-[14px] font-semibold font-mono px-4 h-[32px]",
+        "hover:bg-black/5 active:opacity-80",
         className
       )}
       {...rest}

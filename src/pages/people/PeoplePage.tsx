@@ -28,7 +28,7 @@ import MoreHorizontalIcon from "../../assets/icons/moreHorizontal.svg?react";
 import SecondaryButton from "../../components/button/SecondaryButton";
 import TertiaryButton from "../../components/button/TertiaryButton";
 import Text from "../../components/typography/Text";
-import Input from "../../components/form/Input";
+import SearchInput from "../../components/SearchInput";
 
 const columnHelper = createColumnHelper<Person>();
 
@@ -159,7 +159,7 @@ const PeoplePage: React.FC = () => {
 
         <div className="w-full">
           <div className="my-6 flex items-center justify-between">
-            <Input placeholder="Search" />
+            <SearchInput />
 
             {numberOfSelectedRows > 0 && (
               <div className="flex items-center gap-4">
