@@ -5,8 +5,10 @@ import PageTitle from "../../components/page/PageTitle";
 import PageDescription from "../../components/page/PageDescription";
 import {
   createColumnHelper,
+  FilterFn,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -54,15 +56,16 @@ const columns = [
       );
     },
   }),
-  columnHelper.accessor("details", {
+  columnHelper.accessor((row) => `${row.details.name},${row.details.email}`, {
+    id: "details",
     header: () => <HeaderText>Employee</HeaderText>,
     cell: (info) => {
-      const details = info.getValue();
+      const details = info.getValue().split(",");
 
       return (
         <CellText className="flex flex-col">
-          <span className="text-strong">{details.name}</span>
-          <span>{details.email}</span>
+          <span className="text-strong">{details[0]}</span>
+          <span>{details[1]}</span>
         </CellText>
       );
     },
@@ -126,10 +129,10 @@ const PeoplePage: React.FC = () => {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
+    getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setGlobalFilter,
   });
 
-  // AP-TODO: USE THIS TO DELETE MULTIPLE ROWS ETC
   const selectedRows = table.getSelectedRowModel().rows;
   const numberOfSelectedRows = selectedRows.length;
 
@@ -159,7 +162,10 @@ const PeoplePage: React.FC = () => {
 
         <div className="w-full">
           <div className="my-6 flex items-center justify-between">
-            <SearchInput />
+            <SearchInput
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              onClear={() => setGlobalFilter("")}
+            />
 
             {numberOfSelectedRows > 0 && (
               <div className="flex items-center gap-4">
@@ -186,6 +192,7 @@ const PeoplePage: React.FC = () => {
             )}
           </div>
 
+          {/* AP-TODO: No people state, no search results state */}
           <table className="w-full">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
